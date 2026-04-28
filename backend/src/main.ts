@@ -7,11 +7,11 @@ let cachedServer: any;
 
 async function bootstrap() {
   if (!cachedServer) {
-    const expressApp = express();
-    const app = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
+    const expressInstance = express.default ? (express as any).default() : (express as any)();
+    const app = await NestFactory.create(AppModule, new ExpressAdapter(expressInstance));
     app.enableCors();
     await app.init();
-    cachedServer = expressApp;
+    cachedServer = expressInstance;
   }
   return cachedServer;
 }
