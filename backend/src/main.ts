@@ -14,6 +14,11 @@ async function bootstrap() {
 }
 
 export default async (req: any, res: any) => {
-  const server = await bootstrap();
-  return server(req, res);
+  try {
+    const server = await bootstrap();
+    return server(req, res);
+  } catch (err) {
+    console.error('❌ Vercel Handler Error:', err);
+    res.status(500).send('Internal Server Error: ' + err.message);
+  }
 };
