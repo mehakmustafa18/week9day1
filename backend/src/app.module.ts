@@ -18,6 +18,9 @@ import { ResearchModule } from './research/research.module';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('MONGODB_URI'),
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        serverSelectionTimeoutMS: 5000, // 5 seconds timeout
       }),
       inject: [ConfigService],
     }),
