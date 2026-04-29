@@ -14,21 +14,24 @@ import { ResearchModule } from './research/research.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+
+    // ✅ FIXED MongoDB Connection
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGODB_URI'),
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        serverSelectionTimeoutMS: 5000, // 5 seconds timeout
+        uri: configService.get<string>('MONGODB_URI')!, // ensure not undefined
+        serverSelectionTimeoutMS: 5000, // optional but useful
       }),
       inject: [ConfigService],
     }),
+
+    // ✅ Schemas
     MongooseModule.forFeature([
       { name: ResearchDocument.name, schema: ResearchDocumentSchema },
       { name: Query.name, schema: QuerySchema },
       { name: Trace.name, schema: TraceSchema },
     ]),
+
     DocumentsModule,
     ResearchModule,
   ],
