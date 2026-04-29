@@ -55,8 +55,27 @@ export class ResearchService {
     }
 
     // 3. Rank
-    const rankedDocs = this.ranker.rank(question, docs);
+    const rankedDocs = await this.ranker.rank(question, docs);
     steps.push({ step: 'Ranker', result: rankedDocs.map(d => d.title), timestamp: new Date() });
+
+    if (rankedDocs.length === 0) {
+      const finalAnswer = "The answer is not found in the document content (no relevant matches found).";
+      const trace = await new this.traceModel({
+        queryId: query._id,
+        question,
+        steps,
+        docsUsed: [],
+        contradictions: [],
+        finalAnswer
+      }).save();
+
+      return {
+        queryId: query._id,
+        traceId: trace._id,
+        finalAnswer,
+        trace
+      };
+    }
 
     // 4. Summarize
     const summaries = rankedDocs.slice(0, 3).map(doc => this.summarizer.summarize(doc.content));

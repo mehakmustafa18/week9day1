@@ -14,8 +14,11 @@ export class RankerService {
       const content = (doc.content || '').toLowerCase();
       
       queryTerms.forEach(term => {
+        // Escape special characters in the term for use in RegExp
+        const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        
         // Term Frequency (TF): How many times the term appears in this doc
-        const occurrences = (content.match(new RegExp(term, 'g')) || []).length;
+        const occurrences = (content.match(new RegExp(escapedTerm, 'g')) || []).length;
         if (occurrences > 0) {
           // Inverse Document Frequency (IDF) - simplified for local docs
           // We give more weight to terms that are found in fewer documents
